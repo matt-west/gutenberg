@@ -35,18 +35,28 @@ function selector( select ) {
 		__unstableGetEditorMode,
 		isTyping,
 		isDragging,
+		isSectionBlock,
+		getParentSectionBlock,
 	} = unlock( select( blockEditorStore ) );
 
 	const clientId =
 		getSelectedBlockClientId() || getFirstMultiSelectedBlockClientId();
 
 	const editorMode = __unstableGetEditorMode();
+	const isZoomOut = editorMode === 'zoom-out';
+	let zoomOutToolbarClientId;
+	if ( isZoomOut ) {
+		zoomOutToolbarClientId = isSectionBlock( clientId )
+			? clientId
+			: getParentSectionBlock( clientId );
+	}
 
 	return {
 		clientId,
+		zoomOutToolbarClientId,
 		hasFixedToolbar: getSettings().hasFixedToolbar,
 		isTyping: isTyping(),
-		isZoomOutMode: editorMode === 'zoom-out',
+		isZoomOutMode: isZoomOut,
 		isDragging: isDragging(),
 	};
 }
@@ -65,9 +75,14 @@ export default function BlockTools( {
 	__unstableContentRef,
 	...props
 } ) {
-	const { clientId, hasFixedToolbar, isTyping, isZoomOutMode, isDragging } =
-		useSelect( selector, [] );
-
+	const {
+		clientId,
+		zoomOutToolbarClientId,
+		hasFixedToolbar,
+		isTyping,
+		isZoomOutMode,
+		isDragging,
+	} = useSelect( selector, [] );
 	const isMatch = useShortcutEventMatch();
 	const {
 		getBlocksByClientId,
@@ -222,10 +237,10 @@ export default function BlockTools( {
 					/>
 				) }
 
-				{ showZoomOutToolbar && (
+				{ showZoomOutToolbar && !! zoomOutToolbarClientId && (
 					<ZoomOutPopover
 						__unstableContentRef={ __unstableContentRef }
-						clientId={ clientId }
+						clientId={ zoomOutToolbarClientId }
 					/>
 				) }
 
