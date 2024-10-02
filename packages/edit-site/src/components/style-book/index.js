@@ -362,6 +362,7 @@ const Examples = memo(
 							key={ example.name }
 							id={ `example-${ example.name }` }
 							title={ example.title }
+							content={ example.content }
 							blocks={ example.blocks }
 							isSelected={ isSelected( example.name ) }
 							onClick={ () => {
@@ -400,6 +401,7 @@ const Subcategory = ( { examples, isSelected, onSelect } ) => {
 				key={ example.name }
 				id={ `example-${ example.name }` }
 				title={ example.title }
+				content={ example.content }
 				blocks={ example.blocks }
 				isSelected={ isSelected( example.name ) }
 				onClick={ () => {
@@ -410,7 +412,7 @@ const Subcategory = ( { examples, isSelected, onSelect } ) => {
 	);
 };
 
-const Example = ( { id, title, blocks, isSelected, onClick } ) => {
+const Example = ( { id, title, blocks, isSelected, onClick, content } ) => {
 	const originalSettings = useSelect(
 		( select ) => select( blockEditorStore ).getSettings(),
 		[]
@@ -455,13 +457,17 @@ const Example = ( { id, title, blocks, isSelected, onClick } ) => {
 						aria-hidden
 					>
 						<Disabled className="edit-site-style-book__example-preview__content">
-							<ExperimentalBlockEditorProvider
-								value={ renderedBlocks }
-								settings={ settings }
-							>
-								<EditorStyles />
-								<BlockList renderAppender={ false } />
-							</ExperimentalBlockEditorProvider>
+							{ content ? (
+								content
+							) : (
+								<ExperimentalBlockEditorProvider
+									value={ renderedBlocks }
+									settings={ settings }
+								>
+									<EditorStyles />
+									<BlockList renderAppender={ false } />
+								</ExperimentalBlockEditorProvider>
+							) }
 						</Disabled>
 					</div>
 				</Composite.Item>
